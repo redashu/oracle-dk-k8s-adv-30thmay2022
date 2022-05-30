@@ -375,4 +375,96 @@ helloc1.txt
 home
 
 ```
+## Docker networking. 
+
+### Docker network default setup 
+
+<img src="dnet.png">
+
+### checking docker networks 
+
+```
+ docker network  ls
+NETWORK ID     NAME      DRIVER    SCOPE
+fbb44ed77413   bridge    bridge    local
+b5f34dc63b5b   host      host      local
+a1d6e75a88ae   none      null      local
+[ashu@docker-host webapp1]$ docker network   inspect  fbb44ed77413
+[
+    {
+        "Name": "bridge",
+        "Id": "fbb44ed774136aefaed2e3d339b1665f2c25c850f131d9502d9da5ad20c628c9",
+        "Created": "2022-05-30T04:42:58.171461445Z",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": null,
+            "Config": [
+                {
+                    "Subnet": "172.17.0.0/16"
+                }
+            ]
+        },
+        "Internal": false,
+
+```
+
+### checking container IP 
+
+```
+[ashu@docker-host webapp1]$ docker  inspect  ashuc1
+```
+
+### containers from same bridge can connect 
+
+```
+ docker  run -itd --name test  alpine 
+[ashu@docker-host webapp1]$ docker  run -itd --name test  alpine 
+632fb33174f4024130dc613ec1f1fdecac5a3a9d4a53b26ea480a13a35a2eade
+[ashu@docker-host webapp1]$ 
+[ashu@docker-host webapp1]$ 
+[ashu@docker-host webapp1]$ docker  exec -it  test  sh 
+/ # 
+/ # ping  172.17.0.2 
+PING 172.17.0.2 (172.17.0.2): 56 data bytes
+64 bytes from 172.17.0.2: seq=0 ttl=64 time=0.112 ms
+64 bytes from 172.17.0.2: seq=1 ttl=64 time=0.080 ms
+^C
+--- 172.17.0.2 ping statistics ---
+2 packets transmitted, 2 packets received, 0% packet loss
+round-trip min/avg/max = 0.080/0.096/0.112 ms
+/ # ping  172.17.0.3
+PING 172.17.0.3 (172.17.0.3): 56 data bytes
+64 bytes from 172.17.0.3: seq=0 ttl=64 time=0.113 ms
+64 bytes from 172.17.0.3: seq=1 ttl=64 time=0.086 ms
+^C
+
+```
+
+### NAT is already configured with Host IP 
+
+```
+docker  exec -it  test  sh 
+/ # 
+/ # 
+/ # ping  google.com 
+PING google.com (172.253.122.101): 56 data bytes
+64 bytes from 172.253.122.101: seq=0 ttl=49 time=1.738 ms
+64 bytes from 172.253.122.101: seq=1 ttl=49 time=1.976 ms
+64 bytes from 172.253.122.101: seq=2 ttl=49 time=1.829 ms
+^C
+--- google.com ping statistics ---
+3 packets transmitted, 3 packets received, 0% packet loss
+round-trip min/avg/max = 1.738/1.847/1.976 ms
+/ # exit
+[ashu@docker-host webapp1]$ 
+
+```
+
+### 
+
+<img src="nat.png">
+
 
