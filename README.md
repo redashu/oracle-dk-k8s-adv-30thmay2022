@@ -622,8 +622,25 @@ PING ashuc5 (192.168.100.200): 56 data bytes
 round-trip min/avg/max = 0.092/0.092/0.092 ms
 / # 
 
+```
+
+### Docker network bridge Drivers 
+
+<img src="br123.png">
+
+### mac vlan bridge 
 
 ```
+ docker  network create  ashubr007  --subnet  192.168.1.0/24  --gateway 192.168.1.254  --driver macvlan -o parent=ens33
+  docker run -itd --name c1111 --network ashubr007 --ip 192.168.1.200 alpine 
+  docker run -itd --name c22 --network ashubr007 --ip 192.168.1.201 --privileged  dockerashu/ansible:centos_targetv2
+```
+
+
+### Docker overlay bridge 
+
+<img src="overlay.png">
+
 
 
 
