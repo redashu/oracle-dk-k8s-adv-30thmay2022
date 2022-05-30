@@ -478,5 +478,30 @@ CONTAINER ID   IMAGE              COMMAND                  CREATED          STAT
 632fb33174f4   alpine             "/bin/sh"                12 minutes ago   Up 12 minutes                        
 
 ```
+### Solution to no network question 
+
+```
+docker  network ls
+NETWORK ID     NAME      DRIVER    SCOPE
+fbb44ed77413   bridge    bridge    local
+b5f34dc63b5b   host      host      local
+a1d6e75a88ae   none      null      local
+[ashu@docker-host webapp1]$ 
+[ashu@docker-host webapp1]$ 
+[ashu@docker-host webapp1]$ 
+[ashu@docker-host webapp1]$ docker  run -itd  --name ashucc11 --network  none  oraclelinux:8.4  
+e12cb7f85b2a013ee27d0b0c93578fb62b1e4488aa7430d919a980ba198f55b0
+[ashu@docker-host webapp1]$ 
+[ashu@docker-host webapp1]$ 
+[ashu@docker-host webapp1]$ docker  exec -it ashucc11  bash 
+[root@e12cb7f85b2a /]# ping  172.17.0.1
+connect: Network is unreachable
+[root@e12cb7f85b2a /]# ping  google.com 
+ping: google.com: Name or service not known
+[root@e12cb7f85b2a /]# exit
+exit
+
+```
+
 
 
