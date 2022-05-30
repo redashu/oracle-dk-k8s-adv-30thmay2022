@@ -245,4 +245,90 @@ ashuwebapp    v1        67edff2e4744   47 seconds ago   142MB
 nginx         latest    0e901e68141f   2 days ago       142MB
 
 ```
+### creating container to access sample webapp 
+
+```
+ docker  images
+REPOSITORY      TAG       IMAGE ID       CREATED          SIZE
+pratwebapp      v1        e28b09b0fcc0   24 minutes ago   142MB
+tanviwebapp     v1        0dffcbf4b211   27 minutes ago   142MB
+ashuwebapp      v1        67edff2e4744   28 minutes ago   142MB
+mousumiwebapp   v1        67edff2e4744   28 minutes ago   142MB
+nginx           latest    0e901e68141f   2 days ago       142MB
+[ashu@docker-host webapp1]$ docker  run   -d  --name ashuc1  -p  1122:80   ashuwebapp:v1  
+854758237b085847fabe6043d379c41280c2b29fad29a7c14afd32b36d8965f1
+[ashu@docker-host webapp1]$ 
+[ashu@docker-host webapp1]$ docker  ps
+CONTAINER ID   IMAGE           COMMAND                  CREATED         STATUS         PORTS                                   NAMES
+854758237b08   ashuwebapp:v1   "/docker-entrypoint.…"   5 seconds ago   Up 4 seconds   0.0.0.0:1122->80/tcp, :::1122->80/tcp   ashuc1
+[ashu@docker-host webapp1]$ 
+
+
+```
+
+### clean up 
+
+```
+[ashu@docker-host webapp1]$ docker kill  ashuc1   # stop container 
+ashuc1
+[ashu@docker-host webapp1]$ docker rm  ashuc1 # remove container 
+ashuc1
+[ashu@dock
+
+```
+### image sharing between / among docker Host 
+
+<img src="reg.png">
+
+### pushing iamge to docker hub 
+
+<ol>
+  <li> create / sing in in Docker hub account </li>
+ <li> convert image to docker hub format  </li>
+ <li> login to docker hub account from docker client </li>
+ <li> push image to docker hub  </li>
+<li> you can logout from docker hub  </li> 
+</ol>
+
+### tagging image 
+
+```
+ docker   tag       ashuwebapp:v2           docker.io/dockerashu/ashuwebapp:v2 
+```
+
+### login to docker hub 
+
+```
+[ashu@docker-host webapp1]$ docker  login 
+Login with your Docker ID to push and pull images from Docker Hub. If you don't have a Docker ID, head over to https://hub.docker.com to create one.
+Username: dockerashu
+Password: 
+WARNING! Your password will be stored unencrypted in /home/ashu/.docker/config.json.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+
+Login Succeeded
+```
+
+### pushing imaget to docker hub 
+
+```
+ docker  push  docker.io/dockerashu/ashuwebapp:v2 
+The push refers to repository [docker.io/dockerashu/ashuwebapp]
+fb1ca1535d3e: Pushed 
+33e3df466e11: Mounted from library/nginx 
+747b7a567071: Mounted from library/nginx 
+57d3fc88cb3f: Mounted from library/nginx 
+53ae81198b64: Mounted from library/nginx 
+58354abe5f0e: Mounted from library/nginx 
+ad6562704f37: Mounted from library/nginx 
+v2: digest: sha256:300162b15fa401cfc81652a24ff5626e6668814ce150b1f0636cf7969ddeca23 size: 1780
+```
+
+### logout 
+
+```
+docker logout 
+Removing login credentials for https://index.docker.io/v1/
+```
 
