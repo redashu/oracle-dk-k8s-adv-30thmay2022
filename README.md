@@ -642,6 +642,98 @@ round-trip min/avg/max = 0.092/0.092/0.092 ms
 <img src="overlay.png">
 
 
+### Container restart Policy 
+
+<img src="restart.png">
+
+### demo 
+
+```
+ docker run -d --name c001  --restart always  nginx 
+25c06030232136f05d46c4a651f5d387896fc4378f618a654e99e03fb92b57d4
+[ashu@docker-host webapp1]$ docker  ps
+CONTAINER ID   IMAGE     COMMAND                  CREATED         STATUS        PORTS     NAMES
+25c060302321   nginx     "/docker-entrypoint.…"   2 seconds ago   Up 1 second   80/tcp    c001
+[ashu@docker-host webapp1]$ docker  start ashuc1 
+ashuc1
+[ashu@docker-host webapp1]$ docker  ps
+CONTAINER ID   IMAGE           COMMAND                  CREATED          STATUS         PORTS     NAMES
+25c060302321   nginx           "/docker-entrypoint.…"   9 seconds ago    Up 9 seconds   80/tcp    c001
+87d8272ba028   ashuwebapp:v2   "/docker-entrypoint.…"   49 minutes ago   Up 1 second              ashuc1
+[ashu@docker-host webapp1]$ docker  ps
+CONTAINER ID   IMAGE     COMMAND                  CREATED          STATUS         PORTS     NAMES
+25c060302321   nginx     "/docker-entrypoint.…"   29 seconds ago   Up 5 seconds   80/tcp    c001
+[ashu@docker-host webapp1]$ 
+
+
+```
+
+### Docker volume Importance 
+
+### creating mysql Db container 
+
+```
+docker  run -d  --name ashudb1  -e MYSQL_ROOT_PASSWORD=Docker@099#  mysql
+```
+
+### creating db inside container 
+
+```
+  196  docker  run -d  --name ashudb1  -e MYSQL_ROOT_PASSWORD=Docker@099#  mysql  
+  197  docker  ps
+  198  docker logs   ashudb1
+  199  history 
+[ashu@docker-host webapp1]$ docker  ps
+CONTAINER ID   IMAGE     COMMAND                  CREATED              STATUS              PORTS                 NAMES
+5f74d2e40249   mysql     "docker-entrypoint.s…"   About a minute ago   Up About a minute   3306/tcp, 33060/tcp   ashudb1
+[ashu@docker-host webapp1]$ 
+[ashu@docker-host webapp1]$ 
+[ashu@docker-host webapp1]$ docker  exec -it  ashudb1  bash 
+root@5f74d2e40249:/# 
+root@5f74d2e40249:/# mysql -u root -p
+Enter password: 
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 8
+Server version: 8.0.29 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2022, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+4 rows in set (0.00 sec)
+
+mysql> create  database oracle_data;
+Query OK, 1 row affected (0.00 sec)
+
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| oracle_data        |
+| performance_schema |
+| sys                |
++--------------------+
+5 rows in set (0.00 sec)
+
+mysql> ^DBye
+
+```
+
 
 
 
