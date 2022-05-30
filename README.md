@@ -502,6 +502,129 @@ ping: google.com: Name or service not known
 exit
 
 ```
+### Container with Custom Bridge -- 
+
+```
+ docker  network  create  ashubr1
+c9e5f68ea4c57cee65c1c983a0d914f8d603baa1e8b087475e6f862713b98b2f
+[ashu@docker-host webapp1]$ docker  network  ls
+NETWORK ID     NAME      DRIVER    SCOPE
+c9e5f68ea4c5   ashubr1   bridge    local
+fbb44ed77413   bridge    bridge    local
+b5f34dc63b5b   host      host      local
+a1d6e75a88ae   none      null      local
+[ashu@docker-host webapp1]$ docker  network inspect  ashubr1 
+[
+    {
+        "Name": "ashubr1",
+        "Id": "c9e5f68ea4c57cee65c1c983a0d914f8d603baa1e8b087475e6f862713b98b2f",
+        "Created": "2022-05-30T09:38:52.352673294Z",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": {},
+            "Config": [
+                {
+                    "Subnet": "172.18.0.0/16",
+                    "Gateway": "172.18.0.1"
+
+
+```
+
+### container from same bridge can connect 
+
+```
+ docker run -itd  --name ashuc1  --network ashubr1  alpine 
+2e978f557e1f4b70596414552ecdc8264ebaeb5103f3568b5d4b8c3ee4e40c39
+[ashu@docker-host webapp1]$ 
+[ashu@docker-host webapp1]$ 
+[ashu@docker-host webapp1]$ docker run -itd  --name ashuc2  --network ashubr1  alpine 
+33e8a28e638a20a19b7d993d7e7635b4c0628dfacd8e46f67483c91c2a0b3398
+[ashu@docker-host webapp1]$ 
+[ashu@docker-host webapp1]$ 
+[ashu@docker-host webapp1]$ docker run -itd  --name ashuc3  alpine 
+9fd6ecdb872a8f203f696a096ba71e5bf6f1fa1079a9015055a5a556d3ab9de3
+[ashu@docker-host webapp1]$ 
+[ashu@docker-host webapp1]$ 
+[ashu@docker-host webapp1]$ docker  exec -it ashuc1  sh 
+/ # ping  ashuc2
+PING ashuc2 (172.18.0.3): 56 data bytes
+64 bytes from 172.18.0.3: seq=0 ttl=64 time=0.084 ms
+64 bytes from 172.18.0.3: seq=1 ttl=64 time=0.090 ms
+^C
+--- ashuc2 ping statistics ---
+2 packets transmitted, 2 packets received, 0% packet loss
+round-trip min/avg/max = 0.084/0.087/0.090 ms
+/ # ping  ashuc3
+ping: bad address 'ashuc3'
+/ # 
+
+```
+
+### creating custom bridge with custom subnet 
+
+```
+ docker  network  create  ashubr2  --subnet  192.168.100.0/24  --gateway 192.168.100.1 
+143c45308449ac8c99279859fffc535fa6830f82f2a8e12e987a5cb2bdf5edcb
+[ashu@docker-host webapp1]$ 
+[ashu@docker-host webapp1]$ docker network  ls
+NETWORK ID     NAME         DRIVER    SCOPE
+c9e5f68ea4c5   ashubr1      bridge    local
+143c45308449   ashubr2      bridge    local
+fbb44ed77413   bridge       bridge    local
+b5f34dc63b5b   host         host      local
+e35c52c7710d   mousumibr1   bridge    local
+a1d6e75a88ae   none         null      local
+[ashu@docker-host webapp1]$ docker network inspect  ashubr2
+[
+    {
+        "Name": "ashubr2",
+        "Id": "143c45308449ac8c99279859fffc535fa6830f82f2a8e12e987a5cb2bdf5edcb",
+        "Created": "2022-05-30T09:43:53.80204157Z",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": {},
+            "Config": [
+                {
+                    "Subnet": "192.168.100.0/24",
+                    "Gateway": "192.168.100.1"
+
+
+```
+
+### Demo 
+
+```
+ 153  docker  network  create  ashubr2  --subnet  192.168.100.0/24  --gateway 192.168.100.1 
+  154  docker network  ls
+  155  docker network inspect  ashubr2
+  156  history 
+[ashu@docker-host webapp1]$ docker  run -idt --name ashuc4  --network  ashubr2  alpine  
+3a6260655cc712f2c49f9d1cd6491d5c34666e4447de42e9e69e7d393127a786
+[ashu@docker-host webapp1]$ 
+[ashu@docker-host webapp1]$ 
+[ashu@docker-host webapp1]$ docker  run -idt --name ashuc5 --ip 192.168.100.200   --network  ashubr2  alpine  
+4d9625a8a254b2aa2cf5b73535ea2bab3c21fd4c556aceb407c76e2ae6ff9b39
+[ashu@docker-host webapp1]$ 
+[ashu@docker-host webapp1]$ docker  exec -it ashuc4 sh 
+/ # ping ashuc5
+PING ashuc5 (192.168.100.200): 56 data bytes
+64 bytes from 192.168.100.200: seq=0 ttl=64 time=0.092 ms
+64 bytes from 192.168.100.200: seq=1 ttl=64 time=0.092 ms
+^C
+--- ashuc5 ping statistics ---
+2 packets transmitted, 2 packets received, 0% packet loss
+round-trip min/avg/max = 0.092/0.092/0.092 ms
+/ # 
+
+
+```
+
 
 
 
