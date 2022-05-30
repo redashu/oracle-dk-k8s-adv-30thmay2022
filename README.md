@@ -122,3 +122,80 @@ Server:
 
 ### Note: if you are using OCI -- then VM of OL 7.x is required -- OL 8.x --default container runtime is podman 
 
+### Docker host setup on Local VM 
+
+[URL](https://docs.docker.com/engine/install/)
+
+
+### application containerization 
+
+<img src="appcont.png">
+
+## application containerization 
+
+### sample frontend app containerization 
+
+<img src="app2.png">
+
+### creating app to docker image 
+
+#### step 1  - cloning app 
+
+```
+ git clone  https://github.com/microsoft/project-html-website
+Cloning into 'project-html-website'...
+remote: Enumerating objects: 19, done.
+remote: Total 19 (delta 0), reused 0 (delta 0), pack-reused 19
+Receiving objects: 100% (19/19), 462.63 KiB | 25.70 MiB/s, done.
+[ashu@docker-host webapp1]$ ls
+project-html-website
+[ashu@docker-host webapp1]$ 
+
+
+```
+
+#### step 2 :- dockerfile write 
+
+```
+[ashu@docker-host webapp1]$ cat  Dockerfile 
+FROM nginx 
+#  we are pulling default nginx server image from Docker hub 
+LABEL name=ashutoshh
+LABEL email=ashutoshh@linux.com
+# to share your contact details with image users 
+COPY project-html-website  /usr/share/nginx/html/
+
+```
+
+### step 3. -- all the data 
+
+```
+ls  -a
+.  ..  .dockerignore  Dockerfile  project-html-website
+[ashu@docker-host webapp1]$ cat  Dockerfile 
+FROM nginx 
+#  we are pulling default nginx server image from Docker hub 
+LABEL name=ashutoshh
+LABEL email=ashutoshh@linux.com
+# to share your contact details with image users 
+COPY project-html-website  /usr/share/nginx/html/
+[ashu@docker-host webapp1]$ 
+[ashu@docker-host webapp1]$ 
+[ashu@docker-host webapp1]$ ls  -al  project-html-website/
+total 12
+drwxrwxr-x 6 ashu ashu  103 May 30 05:28 .
+drwxrwxr-x 3 ashu ashu   73 May 30 05:36 ..
+drwxrwxr-x 8 ashu ashu  163 May 30 05:28 .git
+-rw-rw-r-- 1 ashu ashu 1087 May 30 05:28 LICENSE
+-rw-rw-r-- 1 ashu ashu  710 May 30 05:28 README.md
+drwxrwxr-x 2 ashu ashu   22 May 30 05:28 css
+drwxrwxr-x 2 ashu ashu   26 May 30 05:28 fonts
+drwxrwxr-x 2 ashu ashu  147 May 30 05:28 img
+-rw-rw-r-- 1 ashu ashu 2866 May 30 05:28 index.html
+[ashu@docker-host webapp1]$ cat  .dockerignore 
+project-html-website/.git
+project-html-website/*.md
+project-html-website/LICENSE
+
+
+```
