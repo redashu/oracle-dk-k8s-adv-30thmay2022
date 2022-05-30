@@ -199,3 +199,50 @@ project-html-website/LICENSE
 
 
 ```
+
+
+### Step 4 docker image build 
+
+```
+ ls -a
+.  ..  .dockerignore  Dockerfile  project-html-website
+[ashu@docker-host webapp1]$ docker  build  -t   ashuwebapp:v1   . 
+Sending build context to Docker daemon    834kB
+Step 1/4 : FROM nginx
+latest: Pulling from library/nginx
+42c077c10790: Pull complete 
+62c70f376f6a: Pull complete 
+915cc9bd79c2: Pull complete 
+75a963e94de0: Pull complete 
+7b1fab684d70: Pull complete 
+db24d06d5af4: Pull complete 
+Digest: sha256:2bcabc23b45489fb0885d69a06ba1d648aeda973fae7bb981bafbb884165e514
+Status: Downloaded newer image for nginx:latest
+ ---> 0e901e68141f
+Step 2/4 : LABEL name=ashutoshh
+ ---> Running in 3ed21c68ac78
+Removing intermediate container 3ed21c68ac78
+ ---> a0575e7cba94
+Step 3/4 : LABEL email=ashutoshh@linux.com
+ ---> Running in 8c2c848b6860
+Removing intermediate container 8c2c848b6860
+ ---> 6ad5bd1160ec
+Step 4/4 : COPY project-html-website  /usr/share/nginx/html/
+ ---> 67edff2e4744
+Successfully built 67edff2e4744
+Successfully tagged ashuwebapp:v1
+
+
+```
+
+### checking images 
+
+```
+docker  images
+REPOSITORY    TAG       IMAGE ID       CREATED          SIZE
+tanviwebapp   v1        0dffcbf4b211   23 seconds ago   142MB
+ashuwebapp    v1        67edff2e4744   47 seconds ago   142MB
+nginx         latest    0e901e68141f   2 days ago       142MB
+
+```
+
