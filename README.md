@@ -734,6 +734,13 @@ mysql> ^DBye
 
 ```
 
+### MYSQL container with volume 
+
+```
+docker  run -d  --name ashudb1  -e MYSQL_ROOT_PASSWORD=Docker@099# -v  ashuvol1:/var/lib/mysql/  mysql
+
+```
+
 
 
 
