@@ -467,4 +467,16 @@ round-trip min/avg/max = 1.738/1.847/1.976 ms
 
 <img src="nat.png">
 
+### POrt forwarding 
+
+```
+docker  run -itd --name ashuc2 -p  1144:80   ashuwebapp:v2
+1b7044c472b4a2a8f263826b51fe4efdf567b4666d695551a967e1b922c30a02
+[ashu@docker-host webapp1]$ docker  ps
+CONTAINER ID   IMAGE              COMMAND                  CREATED          STATUS          PORTS                                   NAMES
+1b7044c472b4   ashuwebapp:v2      "/docker-entrypoint.…"   2 seconds ago    Up 1 second     0.0.0.0:1144->80/tcp, :::1144->80/tcp   ashuc2
+632fb33174f4   alpine             "/bin/sh"                12 minutes ago   Up 12 minutes                        
+
+```
+
 
