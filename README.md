@@ -332,3 +332,47 @@ docker logout
 Removing login credentials for https://index.docker.io/v1/
 ```
 
+### solution to question 
+
+```
+ docker run -itd  --name ashuc1  alpine sleep  10000
+Unable to find image 'alpine:latest' locally
+latest: Pulling from library/alpine
+2408cc74d12b: Pull complete 
+Digest: sha256:686d8c9dfa6f3ccfc8230bc3178d23f84eeaf7e457f36f271ab1acc53015037c
+Status: Downloaded newer image for alpine:latest
+bcabc3650ccee235a3ea3b70375f7456121d00be8365541fdf4247d18e8a7732
+[ashu@docker-host webapp1]$ 
+[ashu@docker-host webapp1]$ 
+[ashu@docker-host webapp1]$ docker run -itd  --name ashuc2  alpine sleep  10000
+524e88f5f8ea9e1ffb4e94768d6e5e5f481a53b97554f097be34408449557c14
+[ashu@docker-host webapp1]$ docker  ps
+CONTAINER ID   IMAGE              COMMAND                  CREATED          STATUS          PORTS                                   NAMES
+524e88f5f8ea   alpine             "sleep 10000"            2 seconds ago    Up 2 seconds                                            ashuc2
+bcabc3650cce   alpine             "sleep 10000"            9 seconds ago    Up 8 seconds                                            ashuc1
+506d9a387f4e   pratubuntu:v1      "bash"                   10 minutes ago   Up 10 minutes                                           pratc2
+27d522170574   pratubuntu:v1      "bash"                   11 minutes ago   Up 11 minutes                                           pratc1
+7516b2a5bee0   mousumiwebapp:v1   "/docker-entrypoint.…"   24 minutes ago   Up 24 minutes   0.0.0.0:1135->80/tcp, :::1135->80/tcp   mousumic3
+[ashu@docker-host webapp1]$ docker  exec -it ashuc1  sh 
+/ # ls
+bin    dev    etc    home   lib    media  mnt    opt    proc   root   run    sbin   srv    sys    tmp    usr    var
+/ # echo data  >helloc1.txt 
+/ # ls
+bin          etc          home         media        opt          root         sbin         sys          usr
+dev          helloc1.txt  lib          mnt          proc         run          srv          tmp          var
+/ # exit
+[ashu@docker-host webapp1]$ docker  cp  ashuc1:/helloc1.txt  . 
+[ashu@docker-host webapp1]$ ls
+Dockerfile  helloc1.txt  project-html-website
+[ashu@docker-host webapp1]$ docker  cp  helloc1.txt  ashuc2:/
+[ashu@docker-host webapp1]$ ls
+Dockerfile  helloc1.txt  project-html-website
+[ashu@docker-host webapp1]$ docker  exec ashuc2  ls /
+bin
+dev
+etc
+helloc1.txt
+home
+
+```
+
