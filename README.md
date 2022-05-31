@@ -107,4 +107,48 @@ ENTRYPOINT  python3  ashu.py
 
 ```
 
+### COntainer orchestration engines /tools 
+
+<img src="corch.png">
+
+### k8s Introduction 
+
+<img src="k8sintro.png">
+
+### k8s architecture 
+
+<img src="k8sorch.png">
+
+### k8s client side software check 
+
+```
+[ashu@k8s-client ~]$ kubectl version --client  -o json 
+{
+  "clientVersion": {
+    "major": "1",
+    "minor": "24",
+    "gitVersion": "v1.24.1",
+    "gitCommit": "3ddd0f45aa91e2f30c70734b175631bec5b5825a",
+    "gitTreeState": "clean",
+    "buildDate": "2022-05-24T12:26:19Z",
+    "goVersion": "go1.18.2",
+    "compiler": "gc",
+    "platform": "linux/amd64"
+  },
+  "kustomizeVersion": "v4.5.4"
+}
+[ashu@k8s-client ~]$ kubectl version --client  -o yaml 
+clientVersion:
+  buildDate: "2022-05-24T12:26:19Z"
+  compiler: gc
+  gitCommit: 3ddd0f45aa91e2f30c70734b175631bec5b5825a
+  gitTreeState: clean
+  gitVersion: v1.24.1
+  goVersion: go1.18.2
+  major: "1"
+  minor: "24"
+  platform: linux/amd64
+```
+
+
 
