@@ -258,8 +258,115 @@ NAME       READY   STATUS    RESTARTS   AGE
 ashupod1   1/1     Running   0          5s
 [ashu@k8s-client yamls]$ 
 
+```
 
+### pod more commands 
+```
+kubectl  get  pods -o wide 
+NAME          READY   STATUS    RESTARTS   AGE     IP                NODE    NOMINATED NODE   READINESS GATES
+ashupod1      1/1     Running   0          20m     192.168.166.131   node1   <none>           <none>
+mousumipod1   1/1     Running   0          3m38s   192.168.166.133   node1   <none>           <none>
+pratpod1      1/1     Running   0          14m     192.168.166.132   node1   <none>           <none>
+tanvipod1     1/1     Running   0          9m35s   192.168.104.6     node2   <none>           <none>
 
 ```
 
+### Describe pod 
+
+```
+kubectl  describe  pod  ashupod1
+Name:         ashupod1
+Namespace:    default
+Priority:     0
+Node:         node1/172.31.94.94
+Start Time:   Tue, 31 May 2022 08:48:09 +0000
+Labels:       <none>
+Annotations:  cni.projectcalico.org/containerID: 5360ab2d5f8e9af6b2e39dc9a7821d23b565a651e91a7c902e89355667fc305c
+              cni.projectcalico.org/podIP: 192.168.166.131/32
+              cni.projectcalico.org/podIPs: 192.168.166.131/32
+Status:       Running
+IP:           192.168.166.131
+IPs:
+  IP:  192.168.166.131
+Containers:
+  ashuc1:
+    Container ID:   containerd://a8182344de9219a1cb5ead7d0ad6b07fa7433a947146265c58079b417c4a599f
+    Image:          dockerashu/ashuwebapp:v2
+    Image ID:       docker.io/dockerashu/ashuwebapp@sha256:300162b15fa401cfc81652a24ff5626e6668814ce150b1f0636cf7969ddeca23
+    Port:           80/TCP
+    Host Port:      0/TCP
+
+```
+
+### accessing container shell
+
+```
+ kubectl  exec  -it  ashupod1  -- bash 
+root@ashupod1:/# 
+root@ashupod1:/# 
+root@ashupod1:/# ls
+bin   dev		   docker-entrypoint.sh  home  lib64  mnt  proc  run   srv  tmp  var
+boot  docker-entrypoint.d  etc			 lib   media  opt  root  sbin  sys  usr
+root@ashupod1:/# exit
+exit
+
+```
+
+### Delete pods 
+
+```
+ kubectl  delete pod mousumipod1
+pod "mousumipod1" deleted
+[ashu@k8s-client yamls]$ kubectl  get  pods
+NAME        READY   STATUS    RESTARTS   AGE
+ashupod1    1/1     Running   0          4m42s
+pratpod1    1/1     Running   0          3m33s
+tanvipod1   1/1     Running   0          3m23s
+[ashu@k8s-client yamls]$ 
+[ashu@k8s-client yamls]$ ls
+ashupod1.yaml
+[ashu@k8s-client yamls]$ kubectl delete -f ashupod1.yaml 
+pod "ashupod1" deleted
+[ashu@k8s-client yamls]$ kubectl  get  pods
+NAME        READY   STATUS    RESTARTS   AGE
+pratpod1    1/1     Running   0          3m48s
+tanvipod1   1/1     Running   0          3m38s
+
+```
+
+### auto generate YAML --
+
+```
+[ashu@k8s-client yamls]$ kubectl  run  ashupod2 --image=dockerashu/ashuwebapp:v2 --port 80  --dry-run=client -o yaml 
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: ashupod2
+  name: ashupod2
+spec:
+  containers:
+  - image: dockerashu/ashuwebapp:v2
+    name: ashupod2
+    ports:
+    - containerPort: 80
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
+
+[ashu@k8s-client yamls]$ kubectl  run  ashupod2 --image=dockerashu/ashuwebapp:v2 --port 80  --dry-run=client -o yaml  >pod2.yaml 
+```
+
+### Deploy POD yaml 
+
+```
+kubectl create -f  pod2.yaml  
+pod/ashupod2 created
+[ashu@k8s-client yamls]$ kubectl  get  pods
+NAME       READY   STATUS    RESTARTS   AGE
+ashupod2   1/1     Running   0          4s
+[ashu@k8s-client yamls]$ 
+```
 
