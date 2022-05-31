@@ -150,5 +150,68 @@ clientVersion:
   platform: linux/amd64
 ```
 
+### master Node wiil have kube-apiserver 
+
+<img src="apiserver.png">
+
+### sending api server 
+
+```
+ kubectl   get   nodes 
+The connection to the server localhost:8080 was refused - did you specify the right host or port?
+[ashu@k8s-client ~]$ kubectl   get   nodes   --kubeconfig  admin.conf  
+NAME            STATUS   ROLES           AGE    VERSION
+control-plane   Ready    control-plane   159m   v1.24.1
+node1           Ready    <none>          158m   v1.24.1
+node2           Ready    <none>          158m   v1.24.1
+
+```
+
+### checking request from client
+
+```
+ls
+admin.conf  app_images
+[ashu@k8s-client ~]$ kubectl   get   nodes   --kubeconfig  admin.conf  
+NAME            STATUS   ROLES           AGE    VERSION
+control-plane   Ready    control-plane   160m   v1.24.1
+node1           Ready    <none>          160m   v1.24.1
+node2           Ready    <none>          159m   v1.24.1
+[ashu@k8s-client ~]$ kubectl cluster-info    --kubeconfig  admin.conf  
+Kubernetes control plane is running at https://172.31.80.21:6443
+CoreDNS is running at https://172.31.80.21:6443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[ashu@k8s-client ~]$ 
+
+
+```
+
+### setting .kube/config 
+
+```
+ kubectl cluster-info    --kubeconfig  admin.conf  
+Kubernetes control plane is running at https://172.31.80.21:6443
+CoreDNS is running at https://172.31.80.21:6443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[ashu@k8s-client ~]$ 
+[ashu@k8s-client ~]$ 
+[ashu@k8s-client ~]$ 
+[ashu@k8s-client ~]$ mkdir  ~/.kube
+mkdir: cannot create directory '/home/ashu/.kube': File exists
+[ashu@k8s-client ~]$ 
+[ashu@k8s-client ~]$ cp  admin.conf   ~/.kube/config  
+[ashu@k8s-client ~]$ 
+[ashu@k8s-client ~]$ kubectl   get  nodes
+NAME            STATUS   ROLES           AGE    VERSION
+control-plane   Ready    control-plane   163m   v1.24.1
+node1           Ready    <none>          162m   v1.24.1
+node2           Ready    <none>          162m   v1.24.1
+[ashu@k8s-client ~]$ 
+
+
+```
+
 
 
