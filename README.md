@@ -369,4 +369,17 @@ NAME       READY   STATUS    RESTARTS   AGE
 ashupod2   1/1     Running   0          4s
 [ashu@k8s-client yamls]$ 
 ```
+### POds container process control 
+
+<img src="pod_proc.png">
+
+## Networking in kubernetes 
+
+<img src="net1.png">
+
+### k8s networking labels 
+
+<img src="net2.png">
+
+
 
