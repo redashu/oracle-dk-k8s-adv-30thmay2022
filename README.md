@@ -381,5 +381,72 @@ ashupod2   1/1     Running   0          4s
 
 <img src="net2.png">
 
+### Container networking in overall way 
+
+<img src="net3.png">
+
+### CNI bridge in k8s 
+
+<img src="cnibr.png">
+
+### pods from Different Nodes they can communicate to eathOther 
+
+```
+ kubectl run  test-network --image=alpine --command ping localhost 
+pod/test-network created
+[ashu@k8s-client python_images]$ kubectl get po -owide
+NAME           READY   STATUS    RESTARTS   AGE     IP                NODE    NOMINATED NODE   READINESS GATES
+ashupod1       1/1     Running   0          2m39s   192.168.166.143   node1   <none>           <none>
+mousumipod11   1/1     Running   0          57s     192.168.166.145   node1   <none>           <none>
+pratpod1       1/1     Running   0          95s     192.168.104.10    node2   <none>           <none>
+tanvipod1      1/1     Running   0          2m18s   192.168.166.144   node1   <none>           <none>
+test-network   1/1     Running   0          7s      192.168.104.11    node2   <none>           <none>
+[ashu@k8s-client python_images]$ 
+[ashu@k8s-client python_images]$ kubectl exec -it  test-network -- sh 
+/ # 
+/ # ping  192.168.166.145
+PING 192.168.166.145 (192.168.166.145): 56 data bytes
+64 bytes from 192.168.166.145: seq=0 ttl=62 time=0.641 ms
+64 bytes from 192.168.166.145: seq=1 ttl=62 time=0.382 ms
+^C
+--- 192.168.166.145 ping statistics ---
+2 packets transmitted, 2 packets received, 0% packet loss
+round-trip min/avg/max = 0.382/0.511/0.641 ms
+
+
+```
+### networking details
+
+<img src="lb1.png">
+
+### Service Resources to create Internal LB 
+
+<img src="lb2.png">
+
+### type fo service 
+
+<img src="stype.png">
+
+### pod to service --
+
+```
+kubectl get  po 
+NAME           READY   STATUS    RESTARTS   AGE
+ashupod1       1/1     Running   0          20m
+mousumipod11   1/1     Running   0          19m
+pratpod1       1/1     Running   0          19m
+tanvipod1      1/1     Running   0          20m
+test-network   1/1     Running   0          18m
+
+==
+kubectl   expose pod  ashupod1  --type NodePort  --port 80 --name ashulb1 
+service/ashulb1 exposed
+[ashu@k8s-client python_images]$ 
+[ashu@k8s-client python_images]$ 
+[ashu@k8s-client python_images]$ kubectl  get  service 
+NAME         TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
+ashulb1      NodePort    10.108.187.180   <none>        80:30040/TCP   9s
+```
+
 
 
