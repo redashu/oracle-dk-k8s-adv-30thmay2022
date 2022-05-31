@@ -25,7 +25,86 @@ CONTAINER ID   IMAGE                 COMMAND        CREATED         STATUS      
 
 ```
 
+## Explore more Dockerfile Examples 
 
+### Example -- COPY vs  ADD 
 
+### Dockerfile 
+
+```
+FROM oraclelinux:8.4  
+LABEL name=ashutoshh
+LABEL email=ashutoshh@linux.com
+# to share image designer info with image users 
+RUN yum install python3 -y && mkdir  /pycode
+#  run is giving shell access during image build time
+COPY  ashu.py  /pycode/ashu.py 
+# will copy data from docker client to docker server during image build time
+#  COPY src  Dest
+# src must be w.r.t Dockerfile
+
+WORKDIR /pycode 
+# to change directory of dockerfile persistently 
+# its like cd commad unix  / linux
+RUN chmod +x ashu.py 
+CMD  ["python3","ashu.py"]
+# CMD means default process setting for docker image 
+```
+
+### build 
+
+```
+ docker  build  -t  ashupython:v1  . 
+Sending build context to Docker daemon  3.584kB
+Step 1/8 : FROM oraclelinux:8.4
+8.4: Pulling from library/oraclelinux
+a4df6f21af84: Pull complete 
+Digest: sha256:b81d5b0638bb67030b207d28586d0e714a811cc612396dbe3410db406998b3ad
+Status: Downloaded newer image for oraclelinux:8.4
+ ---> 97e22ab49eea
+Step 2/8 : LABEL name=ashutoshh
+ ---> Running in 0bbe8c35f853
+Removing intermediate container 0bbe8c35f853
+ ---> 0f1cfd9d9a3c
+Step 3/8 : LABEL email=ashutoshh@linux.com
+ ---> Running in 06940bbb2011
+Removing intermediate container 06940bbb2011
+ ---> 2302a3b2835e
+
+```
+### creating container 
+
+```
+docker  run -itd  --name ashuc1  ashupython:v1 
+2c87d730af56c8eac17b957ccacc0f8f4fc0987b2bf117d53f92077c4ed20f8b
+[ashu@docker-host python_images]$ docker  ps
+CONTAINER ID   IMAGE           COMMAND             CREATED         STATUS         PORTS     NAMES
+2c87d730af56   ashupython:v1   "python3 ashu.py"   5 seconds ago   Up 4 seconds             ashuc1
+```
+
+### Entrypoint based Dockerfile 
+
+```
+FROM oraclelinux:8.4  
+LABEL name=ashutoshh
+LABEL email=ashutoshh@linux.com
+# to share image designer info with image users 
+RUN yum install python3 -y && mkdir  /pycode
+#  run is giving shell access during image build time
+COPY  ashu.py  /pycode/ashu.py 
+# will copy data from docker client to docker server during image build time
+#  COPY src  Dest
+# src must be w.r.t Dockerfile
+
+WORKDIR /pycode 
+# to change directory of dockerfile persistently 
+# its like cd commad unix  / linux
+RUN chmod +x ashu.py 
+#CMD  ["python3","ashu.py"]
+ENTRYPOINT  python3  ashu.py
+# entrypoint same as CMD with no replace option in the last argument of docker run 
+# CMD means default process setting for docker image 
+
+```
 
 
