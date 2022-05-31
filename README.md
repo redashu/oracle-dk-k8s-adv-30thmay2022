@@ -225,5 +225,41 @@ node2           Ready    <none>          162m   v1.24.1
 
 <img src="pod1.png">
 
+### kube-apiserver in different way 
+
+<img src="api1.png">
+
+### Design first POD 
+
+```
+[ashu@k8s-client ~]$ mkdir yamls 
+[ashu@k8s-client ~]$ cd  yamls/
+[ashu@k8s-client yamls]$ ls
+[ashu@k8s-client yamls]$ vim ashupod1.yaml 
+
+
+[ashu@k8s-client yamls]$ cat  ashupod1.yaml 
+apiVersion: v1
+kind: Pod
+metadata: # info about resource 
+  name: ashupod1 
+spec: # info about your application
+  containers:
+  - name: ashuc1 
+    image: dockerashu/ashuwebapp:v2
+    ports: 
+    - containerPort: 80
+    
+    
+[ashu@k8s-client yamls]$ kubectl create  -f  ashupod1.yaml 
+pod/ashupod1 created
+[ashu@k8s-client yamls]$ kubectl get  pods 
+NAME       READY   STATUS    RESTARTS   AGE
+ashupod1   1/1     Running   0          5s
+[ashu@k8s-client yamls]$ 
+
+
+
+```
 
 
