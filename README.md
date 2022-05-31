@@ -221,5 +221,9 @@ node2           Ready    <none>          162m   v1.24.1
 
 <img src="k8ssch.png">
 
+## Deploy application using POd concept 
+
+<img src="pod1.png">
+
 
 
