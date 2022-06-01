@@ -542,6 +542,50 @@ spec:
         resources: {}
 status: {}
 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ashdb-svc
+  name: ashdb-svc
+spec:
+  ports:
+  - name: 3306-3306
+    port: 3306
+    protocol: TCP
+    targetPort: 3306
+  selector:
+    app: ashdb-svc
+  type: ClusterIP
+status:
+  loadBalancer: {}
+```
+### Deploy YAML 
 
 ```
+[ashu@k8s-client yamls]$ kubectl  create -f db_deploy.yaml 
+secret/ashu-db-sec created
+deployment.apps/ashudb created
+service/ashdb-svc created
+[ashu@k8s-client yamls]$ kubectl  get  secret 
+NAME          TYPE     DATA   AGE
+ashu-db-sec   Opaque   1      8s
+[ashu@k8s-client yamls]$ kubectl  get  deploy
+NAME        READY   UP-TO-DATE   AVAILABLE   AGE
+ashudb      1/1     1            1           13s
+db-client   1/1     1            1           18m
+[ashu@k8s-client yamls]$ kubectl  get  svc
+NAME        TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+ashdb-svc   ClusterIP   10.96.43.50      <none>        3306/TCP         16s
+lb1         NodePort    10.110.139.187   <none>        8080:32231/TCP   18m
+[ashu@k8s-client yamls]$ 
+
+```
+
+### svc with Dns understanding 
+
+<img src="db.png">
+
 
