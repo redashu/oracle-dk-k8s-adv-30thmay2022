@@ -326,5 +326,50 @@ imagesec1   kubernetes.io/dockerconfigjson   1      32s
 
 ```
 
+### deployment YAML -- 
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ashudep1
+  name: ashudep1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ashudep1
+  strategy: {}
+  template: # to create pod 
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: ashudep1
+    spec: # put app specifications 
+      imagePullSecrets:
+      - name: imagesec1
+      containers:
+      - image: oracleindia.azurecr.io/oracleday3:v1
+        name: oracleday3
+        ports:
+        - containerPort: 80
+        env: 
+        - name: deploy 
+          value: app2 
+        resources: {}
+status: {}
+
+
+```
+
+### 
+
+<img src="env.png">
+
+![acr](https://user-images.githubusercontent.com/8552914/171378427-de2ada3f-60d9-40cc-bbbf-cf71eb045784.png)
+![env](https://user-images.githubusercontent.com/8552914/171378444-73c474b5-edcd-43c7-bd88-f889cf6004cb.png)
+
 
 
