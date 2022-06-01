@@ -471,5 +471,77 @@ Data
 namespace:  20 bytes
 token:      eyJhbGciOiJSUzI1NiIsImtpZCI6InNuQ1dUMUdIanJvaWlDWTNONzVxNkV3QkFkMDljUmhLUnQxdHg2ZVh3QnMifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJ
 ```
+### DNS Understanding using two tier webapplication 
 
+<img src="dns.png">
+
+### webapp-db-client deploy 
+
+```
+kubectl  create deploy  db-client --image=adminer  --port 8080 
+deployment.apps/db-client created
+[ashu@k8s-client yamls]$ kubectl   get  deploy 
+NAME        READY   UP-TO-DATE   AVAILABLE   AGE
+db-client   1/1     1            1           6s
+[ashu@k8s-client yamls]$ kubectl   get  po 
+NAME                         READY   STATUS    RESTARTS   AGE
+db-client-69c4f4d48c-stpxj   1/1     Running   0          11s
+[ashu@k8s-client yamls]$ kubectl   expose  deploy db-client --type NodePort --port 8080 --name lb1 
+service/lb1 exposed
+[ashu@k8s-client yamls]$ kubectl  get  svc 
+NAME   TYPE       CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+lb1    NodePort   10.110.139.187   <none>        8080:32231/TCP   5s
+
+```
+
+### database deployment 
+
+#### creating secret and deployment in a single YAML file 
+
+```
+apiVersion: v1
+kind: Secret
+metadata:
+  creationTimestamp: null
+  name: ashu-db-sec # name of secret 
+data: # to store secret data 
+  sqlpass: RG9ja2VyQDA5OSM= 
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ashudb
+  name: ashudb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ashudb
+  strategy: {}
+  template: # for pod creation 
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: ashudb
+    spec:
+      containers:
+      - image: mysql
+        name: mysql
+        ports:
+        - containerPort: 3306
+        env: # to use / create env variable 
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:  # reading value from secret 
+            secretKeyRef:
+              name: ashu-db-sec # name of secret 
+              key: sqlpass # key of secret data 
+        resources: {}
+status: {}
+
+
+```
 
