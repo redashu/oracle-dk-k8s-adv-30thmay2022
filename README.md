@@ -245,5 +245,23 @@ ashulb2   NodePort   10.108.193.204   <none>        80:32202/TCP   12s   app=ash
 [ashu@k8s-client ~]$ 
 
 ```
+### clean namespace 
+
+```
+ kubectl delete all --all
+pod "ashudeploy1-78d9779666-fjznd" deleted
+pod "ashudeploy1-78d9779666-gxgtd" deleted
+pod "ashudeploy1-78d9779666-l2nl6" deleted
+service "lbsv1" deleted
+deployment.apps "ashudeploy1" deleted
+[ashu@k8s-client ~]$ 
+[ashu@k8s-client ~]$ 
+[ashu@k8s-client ~]$ kubectl  get  all
+No resources found in ashu-space namespace.
+[ashu@k8s-client ~]$ 
+
+
+```
+
 
 
