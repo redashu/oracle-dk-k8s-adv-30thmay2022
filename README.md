@@ -262,6 +262,69 @@ No resources found in ashu-space namespace.
 
 
 ```
+## pushing image to ACR -- private registry 
+
+<img src="acr.png">
+
+```
+
+docker  tag  oracleday3:v1  oracleindia.azurecr.io/oracleday3:v1
+ docker login  oracleindia.azurecr.io
+Username: oracleindia
+Password: 
+WARNING! Your password will be stored unencrypted in /home/ashu/.docker/config.json.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+
+Login Succeeded
+[ashu@k8s-client multiapp]$ docker  push  oracleindia.azurecr.io/oracleday3:v1
+The push refers to repository [oracleindia.azurecr.io/oracleday3]
+90d0947109b0: Pushed 
+fbb87d68389c: Pushed 
+
+```
+
+### Now deploy this to k8s 
+
+```
+kubectl  create deployment  ashudep1 --image=oracleindia.azurecr.io/oracleday3:v1  --port=80 --dry-run=client -oyaml  >acrdeploy.yaml
+```
+
+### creating secret 
+
+```
+kubectl  get secret  
+No resources found in ashu-space namespace.
+[ashu@k8s-client multiapp]$ kubectl create  secret  
+Create a secret using specified subcommand.
+
+Available Commands:
+  docker-registry   Create a secret for use with a Docker registry
+  generic           Create a secret from a local file, directory, or literal value
+  tls               Create a TLS secret
+
+Usage:
+  kubectl create secret [flags] [options]
+
+Use "kubectl <command> --help" for more information about a given command.
+Use "kubectl options" for a list of global command-line options (applies to all commands).
+
+```
+
+### secret 
+
+```
+kubectl create  secret  docker-registry imagesec1  --docker-server=oracleindia.azurecr.io  --docker-username=oracleindia   --docker-password="xpu/ydA9LJG0xWVHaOj2bb9mWmq5pIif" 
+secret/imagesec1 created
+[ashu@k8s-client multiapp]$ 
+[ashu@k8s-client multiapp]$ 
+[ashu@k8s-client multiapp]$ kubectl get  secret  
+NAME        TYPE                             DATA   AGE
+imagesec1   kubernetes.io/dockerconfigjson   1      32s
+[ashu@k8s-client multiapp]$ 
+
+
+```
 
 
 
