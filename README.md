@@ -368,8 +368,108 @@ status: {}
 
 <img src="env.png">
 
-![acr](https://user-images.githubusercontent.com/8552914/171378427-de2ada3f-60d9-40cc-bbbf-cf71eb045784.png)
-![env](https://user-images.githubusercontent.com/8552914/171378444-73c474b5-edcd-43c7-bd88-f889cf6004cb.png)
+### deploy webui in k8s cluster 
 
+```
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.5.0/aio/deploy/recommended.yaml
+namespace/kubernetes-dashboard created
+serviceaccount/kubernetes-dashboard created
+service/kubernetes-dashboard created
+secret/kubernetes-dashboard-certs created
+secret/kubernetes-dashboard-csrf created
+secret/kubernetes-dashboard-key-holder created
+configmap/kubernetes-dashboard-settings created
+role.rbac.authorization.k8s.io/kubernetes-dashboard created
+clusterrole.rbac.authorization.k8s.io/kubernetes-dashboard unchanged
+rolebinding.rbac.authorization.k8s.io/kubernetes-dashboard created
+clusterrolebinding.rbac.authorization.k8s.io/kubernetes-dashboard unchanged
+deployment.apps/kubernetes-dashboard created
+service/dashboard-metrics-scraper created
+deployment.apps/dashboard-metrics-scraper created
+[ashu@k8s-client multiapp]$ kubectl  get  ns 
+NAME                   STATUS   AGE
+ashu-space             Active   3h46m
+default                Active   29h
+kube-node-lease        Active   29h
+kube-public            Active   29h
+kube-system            Active   29h
+kubernetes-dashboard   Active   7s
+
+```
+
+### changing service type to LB 
+
+```
+kubectl  -n kubernetes-dashboard get deploy 
+NAME                        READY   UP-TO-DATE   AVAILABLE   AGE
+dashboard-metrics-scraper   1/1     1            1           40s
+kubernetes-dashboard        1/1     1            1           40s
+[ashu@k8s-client multiapp]$ 
+[ashu@k8s-client multiapp]$ kubectl  -n kubernetes-dashboard get po
+NAME                                         READY   STATUS    RESTARTS   AGE
+dashboard-metrics-scraper-7bfdf779ff-2jjcq   1/1     Running   0          47s
+kubernetes-dashboard-6cdd697d84-5wjst        1/1     Running   0          47s
+[ashu@k8s-client multiapp]$ kubectl  -n kubernetes-dashboard get  svc
+NAME                        TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+dashboard-metrics-scraper   ClusterIP   10.108.177.161   <none>        8000/TCP   50s
+kubernetes-dashboard        ClusterIP   10.106.220.37    <none>        443/TCP    50s
+[ashu@k8s-client multiapp]$ kubectl  -n kubernetes-dashboard edit  svc kubernetes-dashboard
+service/kubernetes-dashboard edited
+[ashu@k8s-client multiapp]$ kubectl  -n kubernetes-dashboard get  svc
+NAME                        TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)         AGE
+dashboard-metrics-scraper   ClusterIP      10.108.177.161   <none>        8000/TCP        2m42s
+kubernetes-dashboard        LoadBalancer   10.106.220.37    <pending>     443:31067/TCP   2m42s
+[ashu@k8s-client multiapp]$ 
+
+
+```
+
+### we need to create. dashboard token since 1.24 version of k8s (which is the most recent and stable version )
+
+```
+apiVersion: v1
+kind: Secret
+metadata:
+  creationTimestamp: null
+  name: mysecret
+  namespace: kubernetes-dashboard
+  annotations:
+    kubernetes.io/service-account.name: "kubernetes-dashboard"
+type: kubernetes.io/service-account-token
+
+```
+
+===
+```
+kubectl  apply -f  dash.yaml 
+secret/mysecret created
+[ashu@k8s-client yamls]$ 
+
+kubectl  -n kubernetes-dashboard   get  secret
+NAME                              TYPE                                  DATA   AGE
+kubernetes-dashboard-certs        Opaque                                0      11m
+kubernetes-dashboard-csrf         Opaque                                1      11m
+kubernetes-dashboard-key-holder   Opaque                                2      11m
+mysecret                          kubernetes.io/service-account-token   3      3s
+
+```
+
+### how to get token 
+
+```
+kubectl  -n kubernetes-dashboard describe   secret mysecret
+Name:         mysecret
+Namespace:    kubernetes-dashboard
+Labels:       <none>
+Annotations:  kubernetes.io/service-account.name: kubernetes-dashboard
+              kubernetes.io/service-account.uid: d34b601d-4cdf-4179-bf3f-b76c2cbf40b1
+
+Type:  kubernetes.io/service-account-token
+
+Data
+====
+namespace:  20 bytes
+token:      eyJhbGciOiJSUzI1NiIsImtpZCI6InNuQ1dUMUdIanJvaWlDWTNONzVxNkV3QkFkMDljUmhLUnQxdHg2ZVh3QnMifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJ
+```
 
 
