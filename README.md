@@ -4,3 +4,15 @@
 
 <img src="plan.png">
 
+### Revision 
+
+<img src="rev1.png">
+
+### 
+
+<img src="rev2.png">
+
+### OPen container initiative 
+
+<img src="oci.png">
+
