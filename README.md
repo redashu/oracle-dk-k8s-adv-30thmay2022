@@ -404,6 +404,40 @@ oraclehome   Deployment/oraclehome   0%/10%    3         10        3          36
 
 ```
 
+### creating Role for namespace 
+
+```
+kubectl create  role  pod-role-1  --resource=pod --verb=list,get,create -n dev-team 
+role.rbac.authorization.k8s.io/pod-role-1 created
+[ashu@k8s-client oracle-webapp]$ 
+[ashu@k8s-client oracle-webapp]$ 
+[ashu@k8s-client oracle-webapp]$ kubectl  get  roles   -n  dev-team 
+NAME         CREATED AT
+pod-role-1   2022-06-02T11:26:47Z
+
+```
+
+### binding 
+
+```
+ kubectl  get  roles   -n  dev-team 
+NAME         CREATED AT
+pod-role-1   2022-06-02T11:26:47Z
+svc-role-1   2022-06-02T11:28:14Z
+[ashu@k8s-client oracle-webapp]$ kubectl  get  sa   -n  dev-team 
+NAME      SECRETS   AGE
+default   0         30m
+[ashu@k8s-client oracle-webapp]$ 
+[ashu@k8s-client oracle-webapp]$ kubectl create rolebinding sa-bind1 --role=pod-role-1  --serviceaccount=dev-team:default -n dev-team 
+rolebinding.rbac.authorization.k8s.io/sa-bind1 created
+[ashu@k8s-client oracle-webapp]$ 
+[ashu@k8s-client oracle-webapp]$ 
+[ashu@k8s-client oracle-webapp]$ kubectl  get  rolebinding    -n  dev-team 
+NAME       ROLE              AGE
+sa-bind1   Role/pod-role-1   10s
+[ashu@k8s-client oracle-webapp]$ 
+
+```
 
 
 
