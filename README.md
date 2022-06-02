@@ -185,6 +185,62 @@ ingress-nginx-controller-admission   ClusterIP   10.104.196.225   <none>        
 [ashu@k8s-client multiapp]$ 
 
 ```
+### task 
+
+```
+apiVersion: v1
+kind: Namespace
+metadata:
+  creationTimestamp: null
+  name: ashuk8s1
+spec: {}
+status: {}
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: ashupod1
+  name: ashupod1
+  namespace: ashuk8s1
+spec:
+  containers:
+  - command:
+    - sleep
+    - "1000000"
+    image: ubuntu
+    name: ashupod1
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ashusvc1
+  name: ashusvc1
+  namespace: ashuk8s1
+spec:
+  ports:
+  - name: 1234-80
+    port: 1234
+    protocol: TCP
+    targetPort: 80
+    nodePort: 32001 # choosing static node port 
+  selector:
+    app: ashusvc1
+  type: NodePort
+
+status:
+  loadBalancer: {}
+
+```
+
 
 
 
