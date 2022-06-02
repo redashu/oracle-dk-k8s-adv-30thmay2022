@@ -118,5 +118,73 @@ prateeklb1   LoadBalancer   10.0.164.162   20.204.187.7    80:31251/TCP   47s
 
 ```
 
+### Ingress controller in k8s 
+
+<img src="ingress.png">
+
+### ingress go 
+
+<img src="ing.png">
+
+### ingress controller options 
+
+<img src="ingopt.png">
+
+### nginx ingress controller deployment 
+
+[LInk](https://kubernetes.github.io/ingress-nginx/)
+
+```
+ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.2.0/deploy/static/provider/baremetal/deploy.yaml
+namespace/ingress-nginx created
+serviceaccount/ingress-nginx created
+serviceaccount/ingress-nginx-admission created
+role.rbac.authorization.k8s.io/ingress-nginx created
+role.rbac.authorization.k8s.io/ingress-nginx-admission created
+clusterrole.rbac.authorization.k8s.io/ingress-nginx created
+clusterrole.rbac.authorization.k8s.io/ingress-nginx-admission created
+rolebinding.rbac.authorization.k8s.io/ingress-nginx created
+rolebinding.rbac.authorization.k8s.io/ingress-nginx-admission created
+clusterrolebinding.rbac.authorization.k8s.io/ingress-nginx created
+clusterrolebinding.rbac.authorization.k8s.io/ingress-nginx-admission created
+configmap/ingress-nginx-controller created
+service/ingress-nginx-controller created
+service/ingress-nginx-controller-admission created
+deployment.apps/ingress-nginx-controller cre
+
+```
+
+### verify 
+
+```
+kubectl  get  ns
+NAME                   STATUS   AGE
+ashu-space             Active   24h
+default                Active   2d2h
+ingress-nginx          Active   32s
+kube-node-lease        Active   2d2h
+kube-public            Active   2d2h
+kube-system            Active   2d2h
+kubernetes-dashboard   Active   20h
+nishtha-space          Active   24h
+prat-space             Active   24h
+tanvi                  Active   24h
+tasks                  Active   23h
+[ashu@k8s-client multiapp]$ kubectl  get  deploy -n ingress-nginx
+NAME                       READY   UP-TO-DATE   AVAILABLE   AGE
+ingress-nginx-controller   1/1     1            1           42s
+[ashu@k8s-client multiapp]$ kubectl  get  po  -n ingress-nginx
+NAME                                        READY   STATUS      RESTARTS   AGE
+ingress-nginx-admission-create-k5nws        0/1     Completed   0          49s
+ingress-nginx-admission-patch-2b5dm         0/1     Completed   0          49s
+ingress-nginx-controller-6b864cf6dd-4sqcz   1/1     Running     0          49s
+[ashu@k8s-client multiapp]$ kubectl  get svc  -n ingress-nginx
+NAME                                 TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                      AGE
+ingress-nginx-controller             NodePort    10.105.225.240   <none>        80:32113/TCP,443:32663/TCP   57s
+ingress-nginx-controller-admission   ClusterIP   10.104.196.225   <none>        443/TCP                      57s
+[ashu@k8s-client multiapp]$ 
+
+```
+
 
 
