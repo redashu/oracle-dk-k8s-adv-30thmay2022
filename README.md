@@ -240,6 +240,169 @@ status:
   loadBalancer: {}
 
 ```
+### Implementing ingress controller 
+
+### webapp home page deployment 
+
+```
+kubectl create  deployment  oraclehome --image=dockerashu/oracle:home      --port 80 --dry-run=client -o yaml >oraclehome.yaml
+kubectl  apply -f  oraclehome.yaml 
+deployment.apps/oraclehome created
+[ashu@k8s-client yamls]$ kubectl  get  deploy 
+NAME         READY   UP-TO-DATE   AVAILABLE   AGE
+oraclehome   1/1     1            1           6s
+[ashu@k8s-client yamls]$ kubectl  get  po
+NAME                          READY   STATUS    RESTARTS   AGE
+oraclehome-6d794ffb5f-nvpc4   1/1     Running   0          10s
+===
+kubectl  scale deploy oraclehome --replicas=3
+deployment.apps/oraclehome scaled
+[ashu@k8s-client yamls]$ kubectl get  po 
+NAME                          READY   STATUS    RESTARTS   AGE
+oraclehome-6d794ffb5f-2fgdd   1/1     Running   0          9s
+oraclehome-6d794ffb5f-nvpc4   1/1     Running   0          109s
+oraclehome-6d794ffb5f-wmbvc   1/1     Running   0          9s
+
+=====
+
+```
+### creating service of clusterIP type 
+
+```
+kubectl  get deploy 
+NAME         READY   UP-TO-DATE   AVAILABLE   AGE
+oraclehome   3/3     3            3           6m55s
+[ashu@k8s-client yamls]$ kubectl  expose  deploy  oraclehome  --type ClusterIP --port 80 --name oracle-home-svc 
+service/oracle-home-svc exposed
+[ashu@k8s-client yamls]$ kubectl   get  svc
+NAME              TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)   AGE
+oracle-home-svc   ClusterIP   10.99.160.48   <none>        80/TCP    4s
+[ashu@k8s-client yamls]$ 
+
+```
+
+### ingress YAML for route rule 
+
+```
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ashu-oracle-app-rule1
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx # class means product name 
+  rules:
+  - host: india.oracle.com # rule of this Domain 
+    http:
+      paths:
+      - path: / # mean for default home page 
+        pathType: Prefix
+        backend:
+          service:
+            name: oracle-home-svc # forward traffic here 
+            port:
+              number: 80
+
+```
+
+==
+###
+
+```
+ kubectl apply -f  router-rules.yaml 
+ingress.networking.k8s.io/ashu-oracle-app-rule1 created
+[ashu@k8s-client yamls]$ kubectl  get ingress
+NAME                    CLASS   HOSTS              ADDRESS   PORTS   AGE
+ashu-oracle-app-rule1   nginx   india.oracle.com             80      40s
+[ashu@k8s-client yamls]$ kubectl  get ingress
+NAME                    CLASS   HOSTS              ADDRESS        PORTS   AGE
+ashu-oracle-app-rule1   nginx   india.oracle.com   172.31.94.94   80      51s
+[ashu@k8s-client yamls]$ 
+
+```
+
+### HPA 
+
+### HPA need TSDB 
+
+<img src="tsdb.png">
+
+### deploy metric server 
+
+```
+ kubectl apply -f https://raw.githubusercontent.com/redashu/k8s/hpa/hpa/components.yaml
+serviceaccount/metrics-server created
+clusterrole.rbac.authorization.k8s.io/system:aggregated-metrics-reader created
+clusterrole.rbac.authorization.k8s.io/system:metrics-server created
+rolebinding.rbac.authorization.k8s.io/metrics-server-auth-reader created
+clusterrolebinding.rbac.authorization.k8s.io/metrics-server:system:auth-delegator created
+clusterrolebinding.rbac.authorization.k8s.io/system:metrics-server created
+service/metrics-server created
+deployment.apps/metrics-server created
+apiservice.apiregistration.k8s.io/v1beta1.metrics.k8s.io created
+[ashu@k8s-client oracle-webapp]$ kubectl  get  po -n kube-system 
+NAME                                       READY   STATUS    RESTARTS        AGE
+calico-kube-controllers-56cdb7c587-vkd5g   1/1     Running   2 (5h57m ago)   2d5h
+calico-node-2zdfp                          1/1     Running   2 (5h57m ago)   2d5h
+calico-node-hwd67                          1/1     Running   2 (5h57m ago)   2d5h
+calico-node-hxvml                          1/1     Running   2 (5h57m ago)   2d5h
+coredns-6d4b75cb6d-gsg5q                   1/1     Running   2 (5h57m ago)   2d5h
+coredns-6d4b75cb6d-mf6fq                   1/1     Running   2 (5h57m ago)   2d5h
+etcd-control-plane                         1/1     Running   2 (5h57m ago)   2d5h
+kube-apiserver-control-plane               1/1     Running   2 (5h57m ago)   2d5h
+kube-controller-manager-control-plane      1/1     Running   2 (5h57m ago)   2d5h
+kube-proxy-jlpwx                           1/1     Running   2 (5h57m ago)   2d5h
+kube-proxy-mnwcc                           1/1     Running   2 (5h57m ago)   2d5h
+kube-proxy-vjjgv                           1/1     Running   2 (5h57m ago)   2d5h
+kube-scheduler-control-plane               1/1     Running   2 (5h57m ago)   2d5h
+metrics-server-5b46bd8f77-gstqr            1/1     Running   0               12s
+```
+
+### check resources 
+
+```
+kubectl top  node
+NAME            CPU(cores)   CPU%   MEMORY(bytes)   MEMORY%   
+control-plane   121m         6%     924Mi           11%       
+node1           245m         12%    747Mi           9%        
+node2           75m          3%     696Mi           8%        
+[ashu@k8s-client oracle-webapp]$ kubectl top  pods
+NAME                          CPU(cores)   MEMORY(bytes)   
+oraclehome-6d794ffb5f-2fgdd   0m           2Mi             
+oraclehome-6d794ffb5f-nvpc4   0m           6Mi             
+oraclehome-6d794ffb5f-wmbvc   0m           2Mi             
+[ashu@k8s-client oracle-webapp]$ 
+
+```
+
+### HPA 
+
+```
+ kubectl get deploy 
+NAME         READY   UP-TO-DATE   AVAILABLE   AGE
+oraclehome   1/1     1            1           4m57s
+[ashu@k8s-client oracle-webapp]$ 
+[ashu@k8s-client oracle-webapp]$ 
+[ashu@k8s-client oracle-webapp]$ kubectl  autoscale deploy  oraclehome  --cpu-percent=10 --min=3 --max=10 
+horizontalpodautoscaler.autoscaling/oraclehome autoscaled
+[ashu@k8s-client oracle-webapp]$ kubectl get  hpa
+NAME         REFERENCE               TARGETS         MINPODS   MAXPODS   REPLICAS   AGE
+oraclehome   Deployment/oraclehome   <unknown>/10%   3         10        0          5s
+[ashu@k8s-client oracle-webapp]$ kubectl  get  po 
+NAME                          READY   STATUS    RESTARTS   AGE
+oraclehome-5d677485cf-2mvdx   1/1     Running   0          6m29s
+[ashu@k8s-client oracle-webapp]$ kubectl  get  po 
+NAME                          READY   STATUS    RESTARTS   AGE
+oraclehome-5d677485cf-2mvdx   1/1     Running   0          6m46s
+oraclehome-5d677485cf-pw84p   1/1     Running   0          15s
+oraclehome-5d677485cf-vzcvg   1/1     Running   0          15s
+[ashu@k8s-client oracle-webapp]$ kubectl get  hpa
+NAME         REFERENCE               TARGETS   MINPODS   MAXPODS   REPLICAS   AGE
+oraclehome   Deployment/oraclehome   0%/10%    3         10        3          36s
+[ashu@k8s-client oracle-webapp]$ 
+
+```
 
 
 
