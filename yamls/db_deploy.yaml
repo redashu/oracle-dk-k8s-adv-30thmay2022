@@ -1,0 +1,62 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  creationTimestamp: null
+  name: ashu-db-sec # name of secret 
+data: # to store secret data 
+  sqlpass: RG9ja2VyQDA5OSM= 
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ashudb
+  name: ashudb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ashudb
+  strategy: {}
+  template: # for pod creation 
+    metadata:
+      creationTimestamp: null
+      labels: # label of pods 
+        app: ashudb
+    spec:
+      containers:
+      - image: mysql
+        name: mysql
+        ports:
+        - containerPort: 3306
+        env: # to use / create env variable 
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:  # reading value from secret 
+            secretKeyRef:
+              name: ashu-db-sec # name of secret 
+              key: sqlpass # key of secret data 
+        resources: {}
+status: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ashdb-svc
+  name: ashdb-svc
+spec:
+  ports:
+  - name: 3306-3306
+    port: 3306
+    protocol: TCP
+    targetPort: 3306
+  selector: # to find pod using label 
+    app: ashudb
+  type: ClusterIP
+status:
+  loadBalancer: {}

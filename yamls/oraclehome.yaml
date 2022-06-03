@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: oraclehome
+  name: oraclehome
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oraclehome
+  strategy: {}
+  template: # pod details 
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: oraclehome
+    spec:
+      containers:
+      - image: dockerashu/oracle:home
+        name: oracle
+        ports:
+        - containerPort: 80
+        resources: # here to fix min and max resources 
+         requests:
+          cpu: 100m  # min cpu for app 1 core -- 1000 mili core (1000m)
+         limits:
+          cpu: 300m # max it can use 300m 
+status: {}

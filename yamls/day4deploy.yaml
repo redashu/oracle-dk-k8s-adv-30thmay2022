@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ashuday4app
+  name: ashuday4app # name of deployment 
+  namespace: ashu-space  # namespace where we want to deploy 
+spec:
+  replicas: 1 # number of pods we want 
+  selector:
+    matchLabels:
+      app: ashuday4app
+  strategy: {}
+  template: # template for creating pods 
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: ashuday4app
+    spec:
+      containers:
+      - image: dockerashu/oracle:app007
+        name: oracle
+        ports:
+        - containerPort: 80
+        env: # create / use ENV variable for container image 
+        - name: deploy
+          value: app2 
+        resources: {}
+status: {}

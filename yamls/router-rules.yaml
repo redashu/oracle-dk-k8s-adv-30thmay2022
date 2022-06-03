@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ashu-oracle-app-rule1
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx # class means product name 
+  rules:
+  - host: india.oracle.com # rule of this Domain 
+    http:
+      paths:
+      - path: / # mean for default home page 
+        pathType: Prefix
+        backend:
+          service:
+            name: oracle-home-svc # forward traffic here 
+            port:
+              number: 80

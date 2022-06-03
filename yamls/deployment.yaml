@@ -1,0 +1,26 @@
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels: # label of deployment 
+    app: ashudeploy1
+  name: ashudeploy1 # name of deployment 
+spec:
+  replicas: 1 # number of pod you want always 
+  selector:
+    matchLabels:
+      app: ashudeploy1
+  strategy: {}
+  template: # using template section pod will be created 
+    metadata:
+      creationTimestamp: null
+      labels: # label of pods 
+        app: ashudeploy1
+    spec:
+      containers:
+      - image: dockerashu/ashuwebapp:v2
+        name: ashuwebapp
+        ports:
+        - containerPort: 80
+        resources: {}
+status: {}
