@@ -362,6 +362,10 @@ Switched to context "prateek-context1".
 Error from server (Forbidden): pods is forbidden: User "system:serviceaccount:ashu-customer:test" cannot list resource "pods" in API group "" in the namespace "ashu-customer"
 
 ```
+### storage in k8s 
+
+<img src="vol.png">
+
 
 
 
