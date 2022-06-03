@@ -196,4 +196,110 @@ NAME   READY   STATUS    RESTARTS      AGE
 pod1   1/1     Running   1 (53s ago)   2m57s
 ```
 
+## RBAC and Namespace restrictions 
+
+### creating Namespace --
+
+```
+kubectl create  ns  ashu-customer
+namespace/ashu-customer created
+
+```
+
+### every namespace has default service account 
+
+```
+kubectl get  sa  -n  ashu-customer
+NAME      SECRETS   AGE
+default   0         111s
+```
+
+### creating service account 
+
+```
+kubectl create  sa  dev      -n  ashu-customer
+serviceaccount/dev created
+[ashu@k8s-client ~]$ kubectl create  sa  test      -n  ashu-customer
+serviceaccount/test created
+[ashu@k8s-client ~]$ 
+[ashu@k8s-client ~]$ 
+[ashu@k8s-client ~]$ kubectl get  sa  -n  ashu-customer
+NAME      SECRETS   AGE
+default   0         4m18s
+dev       0         12s
+test      0         5s
+
+```
+
+### creating token for dev service account using secret 
+
+```
+[ashu@k8s-client ~]$ cat  dev-secret.yaml 
+apiVersion: v1
+kind: Secret
+metadata:
+  name: dev-token
+  annotations:
+    kubernetes.io/service-account.name: dev
+type: kubernetes.io/service-account-token
+[ashu@k8s-client ~]$ kubectl apply -f  dev-secret.yaml -n ashu-customer  
+secret/dev-token created
+[ashu@k8s-client ~]$ 
+[ashu@k8s-client ~]$ kubectl  get  sa -n ashu-customer 
+NAME      SECRETS   AGE
+default   0         21m
+dev       0         17m
+test      0         17m
+[ashu@k8s-client ~]$ kubectl  get  secret  -n ashu-customer 
+NAME        TYPE                                  DATA   AGE
+dev-token   kubernetes.io/service-account-token   3      17s
+[ashu@k8s-client ~]$ 
+
+```
+
+### getting token 
+
+```
+kubectl  describe   secret  dev-token   -n ashu-customer 
+Name:         dev-token
+Namespace:    ashu-customer
+Labels:       <none>
+Annotations:  kubernetes.io/service-account.name: dev
+              kubernetes.io/service-account.uid: 65e27864-7370-4380-9b79-4d4c0e8a9a42
+
+Type:  kubernetes.io/service-account-token
+
+Data
+====
+ca.crt:     1099 bytes
+namespace:  13 bytes
+token:      eyJhbGciOiJSUzI1NiIsImtpZCI6InNuQ1dUMUdIanJvaWlDWTNONzVxNkV3QkFkMDljUmhLUnQxdHg2ZVh3QnMifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9
+```
+
+### image you being developer you got the kubernetes config file 
+
+```
+ashu@k8s-client yamls]$ mkdir  rbac_testing 
+[ashu@k8s-client yamls]$ 
+[ashu@k8s-client yamls]$ cp  dev-conf.yaml   rbac_testing/
+[ashu@k8s-client yamls]$ 
+[ashu@k8s-client yamls]$ cd  rbac_testing/
+[ashu@k8s-client rbac_testing]$ ls
+dev-conf.yaml
+[ashu@k8s-client rbac_testing]$ mv  dev-conf.yaml   dev-config 
+[ashu@k8s-client rbac_testing]$ ls
+dev-config
+```
+
+### testing 
+
+```
+ kubectl   get  nodes   --kubeconfig  dev-config 
+Error from server (Forbidden): nodes is forbidden: User "system:serviceaccount:ashu-customer:dev" cannot list resource "nodes" in API group "" at the cluster scope
+[ashu@k8s-client rbac_testing]$ kubectl   get  pods   --kubeconfig  dev-config 
+Error from server (Forbidden): pods is forbidden: User "system:serviceaccount:ashu-customer:dev" cannot list resource "pods" in API group "" in the namespace "ashu-customer"
+```
+
+
+
 
