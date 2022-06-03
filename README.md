@@ -341,6 +341,28 @@ bind1   Role/pod-role   17s
 
 ```
 
+### switching contexts 
+
+```
+kubectl config get-contexts 
+CURRENT   NAME               CLUSTER        AUTHINFO   NAMESPACE
+*         ashu-context1      ashu-cluster   dev        ashu-customer
+          prateek-context1   ashu-cluster   test       ashu-customer
+[ec2-user@k8s-client ~]$ 
+[ec2-user@k8s-client ~]$ 
+[ec2-user@k8s-client ~]$ kubectl  get  po,deploy 
+NAME                      READY   STATUS    RESTARTS   AGE
+pod/d1-7dbcccfbb5-wc22j   1/1     Running   0          10m
+
+NAME                 READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/d1   1/1     1            1           10m
+[ec2-user@k8s-client ~]$ kubectl config use-context  prateek-context1
+Switched to context "prateek-context1".
+[ec2-user@k8s-client ~]$ kubectl  get  po,deploy 
+Error from server (Forbidden): pods is forbidden: User "system:serviceaccount:ashu-customer:test" cannot list resource "pods" in API group "" in the namespace "ashu-customer"
+
+```
+
 
 
 
