@@ -367,6 +367,129 @@ Error from server (Forbidden): pods is forbidden: User "system:serviceaccount:as
 <img src="vol.png">
 
 
+```
+kubectl  get pods
+NAME        READY   STATUS             RESTARTS      AGE
+multi-app   1/2     CrashLoopBackOff   1 (16s ago)   18s
+[ashu@k8s-client ~]$ kubectl  get pods
+NAME        READY   STATUS    RESTARTS   AGE
+multi-app   2/2     Running   0          2s
+[ashu@k8s-client ~]$ kubectl  get pods
+NAME        READY   STATUS    RESTARTS   AGE
+multi-app   2/2     Running   0          3s
+[ashu@k8s-client ~]$ kubectl  exec -it  multi-app -- sh 
+Defaulted container "data-gen" out of: data-gen, data-show
+/ # cd  /data/
+/data # ls
+logs.txt
+/data # cat  logs.txt 
+hello logs
+hello logs
+hello logs
+/data # exit
+[ashu@k8s-client ~]$ kubectl  exec -it  multi-app -c  data-show -- bash  
+root@multi-app:/# cd /usr/share/nginx/html/
+root@multi-app:/usr/share/nginx/html# ls
+logs.txt
+root@multi-app:/usr/share/nginx/html# 
+
+```
+
+### checking logs 
+
+```
+ kubectl  get  po 
+NAME        READY   STATUS    RESTARTS   AGE
+multi-app   2/2     Running   0          102s
+[ashu@k8s-client ~]$ kubectl expose pod multi-app --type NodePort --port 80 --name s1
+service/s1 exposed
+[ashu@k8s-client ~]$ kubectl  get svc
+NAME   TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
+s1     NodePort   10.108.66.85   <none>        80:32700/TCP   3s
+```
+
+## FINAL YAML file 
+
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: multi-app
+  name: multi-app # name of pod 
+spec:
+  volumes: # creating volume 
+  - name: ashuvol1 
+    hostPath: # taking storage from Minion Node 
+      path: /mnt/ashudata/
+      type: DirectoryOrCreate # if above location is not present then it will create
+  containers:
+  - image: alpine
+    name: data-gen 
+    volumeMounts:
+    - name: ashuvol1
+      mountPath: /data/
+    command: ["sh","-c","while true;  do  echo hello logs >>/data/logs.txt ; sleep 10;done"]
+  - image: nginx
+    name: data-show
+    ports:
+    - containerPort: 80
+    resources: {}
+    volumeMounts: # attaching volume inside container 
+    - name: ashuvol1
+      mountPath: /usr/share/nginx/html/
+      readOnly: true # read only mode 
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
+
+
+```
+
+### MYSQLDB WITH NFS REMOTE STORAGE 
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: db1
+  name: db1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: db1
+    spec:
+      volumes:
+      - name: ashuvol2
+        nfs:
+          server: 172.31.81.96
+          path: /datadb
+      containers:
+      - image: mysql
+        name: mysql
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+        - name: ashuvol2
+          mountPath: /var/lib/mysql/
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: Oracle@099 
+        resources: {}
+status: {}
+
+```
+
 
 
 
