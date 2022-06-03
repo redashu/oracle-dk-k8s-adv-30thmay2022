@@ -299,6 +299,48 @@ Error from server (Forbidden): nodes is forbidden: User "system:serviceaccount:a
 [ashu@k8s-client rbac_testing]$ kubectl   get  pods   --kubeconfig  dev-config 
 Error from server (Forbidden): pods is forbidden: User "system:serviceaccount:ashu-customer:dev" cannot list resource "pods" in API group "" in the namespace "ashu-customer"
 ```
+### creating roles for ashu-customer namespace 
+
+```
+ kubectl  create   role  pod-role  --resource=pod --verb=list,get,create    -n ashu-customer 
+role.rbac.authorization.k8s.io/pod-role created
+[ashu@k8s-client ~]$ 
+[ashu@k8s-client ~]$ kubectl  get  roles  -n ashu-customer 
+NAME       CREATED AT
+pod-role   2022-06-03T06:19:16Z
+[ashu@k8s-client ~]$ kubectl  create   role  deploy-role  --resource=deployment --verb=list,get,create,delete    -n ashu-customer 
+role.rbac.authorization.k8s.io/deploy-role created
+[ashu@k8s-client ~]$ kubectl  get  roles  -n ashu-customer 
+NAME          CREATED AT
+deploy-role   2022-06-03T06:19:59Z
+pod-role      2022-06-03T06:19:16Z
+[ashu@k8s-client ~]$ 
+
+```
+
+### create rolebinding 
+
+```
+kubectl  get  sa   -n ashu-customer 
+NAME      SECRETS   AGE
+default   0         82m
+dev       0         77m
+test      0         77m
+[ashu@k8s-client ~]$ kubectl  get  roles  -n ashu-customer 
+NAME          CREATED AT
+deploy-role   2022-06-03T06:19:59Z
+pod-role      2022-06-03T06:19:16Z
+[ashu@k8s-client ~]$ 
+[ashu@k8s-client ~]$ 
+[ashu@k8s-client ~]$ kubectl create  rolebinding bind1 --role=pod-role --serviceaccount=ashu-custerm:dev  -n ashu-customer
+rolebinding.rbac.authorization.k8s.io/bind1 created
+[ashu@k8s-client ~]$ 
+[ashu@k8s-client ~]$ kubectl  get  rolebinding   -n ashu-customer 
+NAME    ROLE            AGE
+bind1   Role/pod-role   17s
+
+```
+
 
 
 
